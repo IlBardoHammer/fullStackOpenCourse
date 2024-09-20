@@ -2,14 +2,32 @@ sequenceDiagram
 participant Browser
 participant Server
 
+
     Browser->>Server: GET /exampleapp/notes
     Server-->>Browser: HTML with form for entering note
     
     Browser->>Server: POST /exampleapp/new_note (with the note in the payload)
-    Server-->>Server: Process and save the note
-    
+    Server: Process and save the note
     Server-->>Browser: Redirect a /exampleapp/notes
-    
-    Browser->>Server: GET /exampleapp/notes
-    Server-->>Browser: HTML with the new note
+    deactivate server    
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
+    activate server
+    server-->>browser: HTML document
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+    activate server
+    server-->>browser: the css file
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.js
+    activate server
+    server-->>browser: the JavaScript file
+    deactivate server
+
+    browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+    activate server
+    server-->>browser: [{ "content": "HTML is easy", "date": "2023-1-1" }, ... ]
+    deactivate server
 
