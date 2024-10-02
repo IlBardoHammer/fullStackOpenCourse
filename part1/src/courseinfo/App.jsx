@@ -1,60 +1,52 @@
-const Header = (props) => {
-  return (
-    <h1>{ props.course }</h1>
-  )
-}
+import { useState } from "react";
 
-const Part = (props) => {
-  return (
-    <p>{props.part} {props.exercise}</p>
-  )
-}
-
-const Content = (props) => {
-  console.log(props)
+const History = (props) => {
+  if ( props.allClicks.length === 0 ) {
+    return (
+      <div>
+        the app is used by pressing the buttons
+      </div>
+    )
+  }
   return (
     <div>
-      // le props vengono passate da App a Content, ma content non le utilizza,
-      // le passa semplicemente al componente Part, che va ad usarle.
-      <Part part={props.parts[0].name} exercise={props.parts[0].exercises}/>
-      <Part part={props.parts[1].name} exercise={props.parts[1].exercises}/>
-      <Part part={props.parts[2].name} exercise={props.parts[2].exercises}/>
+      button press history: { props.allClicks.join(' ') }
     </div>
   )
 }
 
-const Total = (props) => {
-  return (
-    <p>Number of exercises { props.exercise1 + props.exercise2 + props.exercise3 }</p>
-  )
-}
+const Button = ({ handleClick, text }) => (
+  <button onClick={ handleClick }>
+    { text }
+  </button>
+)
 
 const App = () => {
-  const course = 'Half Stack application development'
-  const parts = [
-    {
-      name: 'Fundamentals of React',
-      exercises: 10
-    },
-    {
-      name: 'Using props to pass data',
-      exercises: 7
-    },
-    {
-      name: 'State of a component',
-      exercises: 14
-    }
-  ]
+  const [ left, setLeft ] = useState(0)
+  const [ right, setRight ] = useState(0)
+  const [ allClicks, setAll ] = useState([])
+
+
+  const handleLeftClick = () => {
+    setAll(allClicks.concat('L'))
+    const updatedLeft = left + 1
+    setLeft(updatedLeft)
+  }
+
+  const handleRightClick = () => {
+    setAll(allClicks.concat('R'));
+    const updatedRight = right + 1;
+    setRight(updatedRight);
+  };
 
   return (
     <div>
-      <Header course={ course }/>
-      <Content
-       parts={parts}
-      />
-      <Total parts={parts}/>
+      { left }
+      <Button handleClick={ handleLeftClick } text="left"/>
+      <Button handleClick={ handleRightClick } text="right"/>
+      { right }
+      <History allClicks={ allClicks }/>
     </div>
   )
 }
-
 export default App
