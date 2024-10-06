@@ -12,20 +12,35 @@ const App = () => {
     'The only way to go fast, is to go well.'
   ]
 
-  const [selected, setSelected] = useState(0)
+  const [ selected, setSelected ] = useState(0)
+  const [ vote, setVote ] = useState(Array(anecdotes.length).fill(0));
+  const [ maxIndex, setMaxIndex ] = useState(0);
 
   const handleGenerateRandom = () => {
-    let x = Math.floor(Math.random() * 8);
-    console.log(x)
-    setSelected(x);
+    let randomNumIndex = Math.floor(Math.random() * 8);
+    setSelected(randomNumIndex);
+  };
 
+  const handleVote = (indexToUpdate) => {
+    const updateVoteArray = [...vote]
+    updateVoteArray[indexToUpdate] += 1
+
+    const updateMax = updateVoteArray.indexOf(Math.max(...updateVoteArray))
+
+    setMaxIndex(updateMax)
+    setVote(updateVoteArray)
   };
 
   return (
-
     <div>
-      <h4>{anecdotes[selected]}</h4>
-      <button onClick={handleGenerateRandom}>next anecdote</button>
+      <h3>Anecdote of the day</h3>
+      <p>{ anecdotes[ selected ] }</p>
+      <p>has { vote[ selected ] } votes</p>
+      <button onClick={ () => handleVote(selected) }>vote</button>
+      <button onClick={ handleGenerateRandom }>next anecdote</button>
+      <h3>Anecdote with most votes</h3>
+      <p>{ anecdotes[ maxIndex ] }</p>
+      <p>has { vote[ maxIndex ] } votes</p>
     </div>
   )
 }
