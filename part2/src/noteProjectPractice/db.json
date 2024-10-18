@@ -1,18 +1,28 @@
 {
   "notes": [
     {
-      "id": "1",
-      "content": "HTML is easy",
+      "id": "950f",
+      "content": "ciao",
       "important": true
     },
     {
-      "id": "2",
-      "content": "Browser can execute only JavaScript",
+      "id": "1690",
+      "content": "Python is less",
+      "important": true
+    },
+    {
+      "id": "7820",
+      "content": "Css is not a language",
       "important": false
     },
     {
-      "id": "3",
-      "content": "GET and POST are the most important methods of HTTP protocol",
+      "id": "d427",
+      "content": "HTML is for child",
+      "important": false
+    },
+    {
+      "id": "9874",
+      "content": "Next is for Genius",
       "important": true
     }
   ]
