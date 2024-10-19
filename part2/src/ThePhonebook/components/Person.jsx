@@ -1,3 +1,11 @@
-const Person = ({ personObject }) => <h4>{ personObject.name } { personObject.number }</h4>
+const Person = ({ personObject, onRemovePerson }) => {
+  return (
+    <div>
+      <span>{ personObject.name } { personObject.number }</span>
+      <button onClick={() => onRemovePerson(personObject.id, personObject.name)}>delete</button>
+    </div>
+  )
+
+}
 
 export default Person;
