@@ -3,14 +3,15 @@ import PersonForm from "./components/PersonForm.jsx";
 import Filter from "./components/Filter.jsx";
 import Persons from "./components/Persons.jsx";
 import personServices from './services/personServices.js'
-import axios from "axios";
-
+import Notification from "./components/Notification.jsx";
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filterName, setFilterName ] = useState('')
+  const [ message, setMessage ] = useState(null)
+  const [ messageType, setMessageType ] = useState(null)
 
   useEffect(() => {
     personServices
@@ -30,15 +31,27 @@ const App = () => {
   const handleFilterChange = event => setFilterName(event.target.value)
 
   const handleUpdateNumberOfPerson = (personToEdit, newNumber) => {
-    const editNumberPerson = {...personToEdit, number: newNumber}
+    if ( window.confirm(`${ personToEdit.name } is already added to phonebook, replace the old number with a new one?`) ) {
+      const editNumberPerson = { ...personToEdit, number: newNumber }
+      personServices
+        .updateNumberOfPerson(editNumberPerson.id, editNumberPerson)
+        .then(response => {
+          setPersons(persons.map(person => person.id === response.data.id ? response.data : person))
+          setNewName('')
+          setNewNumber('')
+        })
+        .catch(error => {
+          setMessageType(error.status)
+          setMessage(`Information of ${ personToEdit.name } has already been removed from server`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
+        })
+    }
+    else {
+      alert('Press yes to confirm the action.')
+    }
 
-    personServices
-      .updateNumberOfPerson(editNumberPerson.id, editNumberPerson)
-      .then(response => {
-        setPersons(persons.map(person => person.id === response.data.id ? response.data : person))
-        setNewName('')
-        setNewNumber('')
-      })
   }
 
   const handleAddPerson = (event) => {
@@ -51,7 +64,7 @@ const App = () => {
         handleUpdateNumberOfPerson(personExists, newNumber)
       }
       else {
-        alert(`${newName} is already added to phonebook with the same number.`)
+        alert(`${ newName } is already added to phonebook with the same number.`)
       }
     }
     else {
@@ -62,9 +75,15 @@ const App = () => {
       personServices
         .createPerson(newObjectPerson)
         .then(response => {
+          console.log(response)
           setPersons(persons.concat(response.data))
           setNewName('')
           setNewNumber('')
+          setMessageType(response.status)
+          setMessage(`Added ${ response.data.name }`)
+          setTimeout(() => {
+            setMessage(null)
+          }, 5000)
         })
     }
   };
@@ -87,6 +106,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={ message } type={ messageType }/>
       <Filter
         filterName={ filterName }
         onFilterChange={ handleFilterChange }
