@@ -10,20 +10,18 @@ const Footer = () => {
     fontSize: 16
   }
   return (
-    <div style={footerStyle}>
-      <br />
+    <div style={ footerStyle }>
+      <br/>
       <em>Note app, Department of Computer Science, University of Helsinki 2024</em>
     </div>
   )
 }
 
-
 const App = () => {
-  const [ notes, setNotes ] = useState([])
+  const [ notes, setNotes ] = useState(null)
   const [ newNote, setNewNote ] = useState('')
   const [ showAll, setShowAll ] = useState(true)
-  const [errorMessage, setErrorMessage] = useState(null)
-
+  const [ errorMessage, setErrorMessage ] = useState(null)
 
   useEffect(() => {
     noteService
@@ -38,7 +36,7 @@ const App = () => {
   const toggleImportanceOf = id => {
 
     const noteToEdit = notes.find(note => note.id === id)
-    const updateNote = {...noteToEdit, important: !noteToEdit.important }
+    const updateNote = { ...noteToEdit, important: !noteToEdit.important }
 
     noteService
       .update(id, updateNote)
@@ -48,7 +46,7 @@ const App = () => {
       .catch(error => {
         console.log(error)
         setErrorMessage(
-          `Note '${noteToEdit.content}' was already removed from server`
+          `Note '${ noteToEdit.content }' was already removed from server`
         )
         setTimeout(() => {
           setErrorMessage(null)
@@ -82,18 +80,18 @@ const App = () => {
   return (
     <div>
       <h1>Notes</h1>
-      <Notification message={errorMessage}/>
+      <Notification message={ errorMessage }/>
       <button onClick={ () => setShowAll( !showAll) }>
         show { showAll ? 'important' : 'all' }
       </button>
       <ul>
-        { notesToShow.map(note =>
+        { notesToShow ? ( notesToShow.map(note =>
           <Note
             key={ note.id }
             note={ note }
             toggleImportance={ () => toggleImportanceOf(note.id) }
           />
-        ) }
+        )) : (<p>Loading</p>) }
       </ul>
       <form onSubmit={ addNote }>
         <input value={ newNote } onChange={ handleNoteChange }/>
