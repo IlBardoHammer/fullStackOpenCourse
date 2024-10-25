@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Notifications from "./components/Notifications.jsx";
 import Countries from "./components/Countries.jsx";
+import CountriesService from "./services/countries.js"
 
 const App = () => {
   const [ countries, setCountries ] = useState([])
@@ -10,8 +10,8 @@ const App = () => {
   const [ notifications, setNotifications ] = useState(null)
 
   useEffect(() => {
-    axios
-      .get(`https://studies.cs.helsinki.fi/restcountries/api/all`)
+    CountriesService
+      .getAllCountries()
       .then(response => {
         setAllCountries(response.data)
       })
@@ -27,7 +27,6 @@ const App = () => {
         }
         else if ( queryCountry.length >= 1 && queryCountry.length <= 10 ) {
           setCountries(queryCountry)
-          console.log(queryCountry)
           setNotifications(null)
         }
         else {

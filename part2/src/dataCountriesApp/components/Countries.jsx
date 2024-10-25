@@ -1,20 +1,35 @@
 import Country from "./Country.jsx";
+import { useState } from "react";
 
 const Countries = ({ countries }) => {
-  if (!countries)  {
+  const [ showView, setShowView ] = useState({})
+
+  const handleShow = (id) => {
+    setShowView(prevState => ( {
+      ...prevState,
+      [ id ]: !prevState[ id ],
+
+    } ))
+  };
+
+  if ( !countries ) {
     return null
   }
 
   if ( countries.length === 1 ) {
-    return <Country countryToShow={countries[0]}/>
+    return <Country countryToShow={ countries[ 0 ] }/>
   }
   else {
     return (
-      <ul>
+      <div>
         { countries.map(country => (
-          <li key={country.cca3}>{ country.name.common }</li>
+          <div key={ country.cca3 }>
+            <span>{ country.name.common }</span>
+            <button onClick={ () => handleShow(country.cca3) }>{ showView[ country.cca3 ] ? 'hide' : 'show' }</button>
+            { showView[ country.cca3 ] ? <Country countryToShow={ country }/> : '' }
+          </div>
         )) }
-      </ul>
+      </div>
     )
   }
 
