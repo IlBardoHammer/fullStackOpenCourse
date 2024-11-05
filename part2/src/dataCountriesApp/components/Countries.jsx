@@ -1,7 +1,7 @@
 import Country from "./Country.jsx";
 import { useState } from "react";
 
-const Countries = ({ countries }) => {
+const Countries = ({ countries, weatherData }) => {
   const [ showView, setShowView ] = useState({})
 
   const handleShow = (id) => {
@@ -16,9 +16,10 @@ const Countries = ({ countries }) => {
     return null
   }
 
-  if ( countries.length === 1 ) {
-    return <Country countryToShow={ countries[ 0 ] }/>
+  if ( countries.length === 1 && weatherData ) {
+    return <Country countryToShow={ countries[ 0 ] } weatherData={ weatherData }/>
   }
+
   else {
     return (
       <div>

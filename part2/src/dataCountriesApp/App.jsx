@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import Notifications from "./components/Notifications.jsx";
 import Countries from "./components/Countries.jsx";
 import CountriesService from "./services/countries.js"
+import WeatherService from "./services/weather.js"
 
 const App = () => {
   const [ countries, setCountries ] = useState([])
   const [ allCountries, setAllCountries ] = useState([])
   const [ newCountry, setNewCountry ] = useState('')
+  const [ weatherData, setWeatherData ] = useState(null)
   const [ notifications, setNotifications ] = useState(null)
+
 
   useEffect(() => {
     CountriesService
@@ -25,7 +28,18 @@ const App = () => {
           setCountries([])
           setNotifications('No countries found.')
         }
-        else if ( queryCountry.length >= 1 && queryCountry.length <= 10 ) {
+        else if ( queryCountry.length > 1 && queryCountry.length <= 10 ) {
+          setCountries(queryCountry)
+          setNotifications(null)
+        }
+        else if ( queryCountry.length === 1 ) {
+          const [ lat, long ] = queryCountry[ 0 ].capitalInfo.latlng
+          WeatherService
+            .getWeatherData(lat, long)
+            .then(response => {
+              setWeatherData(response.data)
+              console.log(response.data)
+            })
           setCountries(queryCountry)
           setNotifications(null)
         }
@@ -50,7 +64,7 @@ const App = () => {
       <input value={ newCountry } onChange={ handleChangeQuery }/>
       <Notifications message={ notifications }/>
       <div>
-        <Countries countries={countries}/>
+        <Countries countries={ countries } weatherData={ weatherData }/>
       </div>
 
     </div>

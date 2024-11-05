@@ -8,4 +8,4 @@ const getAllCountries = () => {
 }
 
 
-export default { getAllCountries }
+export default { getAllCountries };
