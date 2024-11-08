@@ -1,7 +1,7 @@
 const express = require('express');
+const morgan = require('morgan')
 const app = express();
 const PORT = 3002;
-app.use(express.json())
 
 let persons = [
   {
@@ -29,6 +29,18 @@ let persons = [
 const generateId = () => {
   return Math.floor(Math.random() * 10000).toString()
 }
+
+// MIDDLEWARE
+
+app.use(express.json())
+
+morgan.token('body', function (req) {
+  return JSON.stringify(req.body)
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+
+// ROUTE HANDLER
 
 app.get('/api/persons', (request, response) => {
   response.json(persons)
