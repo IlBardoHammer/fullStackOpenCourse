@@ -2,6 +2,11 @@ const express = require('express');
 const cors = require('cors')
 const app = express();
 
+require('dotenv').config()
+
+const Note = require('./models/note')
+
+// Backend
 
 let notes = [
   {
@@ -38,19 +43,14 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
-const generateId = () => {
-  const maxId = notes.length > 0
-    ? Math.max(...notes.map(n => Number(n.id)))
-    : 0
-  return String(maxId + 1)
-}
-
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
 })
 
 app.get('/api/notes', (request, response) => {
-  response.json(notes)
+  Note.find({}).then(notes => {
+    response.json(notes)
+  })
 })
 
 app.get('/api/notes/:id', (request, response) => {
@@ -73,14 +73,16 @@ app.post('/api/notes', (request, response) => {
     })
   }
 
-  const newNote = {
-    id: generateId(),
+  const note = new Note({
     content: body.content,
-    important: Boolean(body.important) || false
-  }
+    important: body.important || false,
+  })
 
-  notes.concat(newNote)
-  response.json(newNote)
+  note.save().then(savedNote => {
+    console.log("Saved note:", savedNote); // Log della nota salvata
+    response.status(201).json(savedNote);
+  })
+
 })
 
 app.delete('/api/notes/:id', (request, response) => {
@@ -93,6 +95,8 @@ app.delete('/api/notes/:id', (request, response) => {
 app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
+
+console.log(PORT)
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
