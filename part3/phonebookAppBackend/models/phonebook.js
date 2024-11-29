@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const url = 'mongodb+srv://IlBardoHammer:tcXUd9VhGJeqBIA9@cluster0.fn6pq.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=Cluster0'
+const url = process.env.MONGODB_URI
 
 mongoose.set('strictQuery', false)
 
@@ -11,7 +11,7 @@ mongoose.connect(url)
     console.log('Connected to MongoDB')
   })
   .catch(result => {
-    console.log('Failed connection to MongoDB', result)
+    console.log('Failed connection to MongoDB')
   })
 
 const personSchema = new mongoose.Schema({
