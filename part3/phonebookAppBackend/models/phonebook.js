@@ -11,7 +11,7 @@ mongoose.connect(url)
     console.log('Connected to MongoDB')
   })
   .catch(result => {
-    console.log('Failed connection to MongoDB')
+    console.log('Failed connection to MongoDB', result)
   })
 
 const personSchema = new mongoose.Schema({
