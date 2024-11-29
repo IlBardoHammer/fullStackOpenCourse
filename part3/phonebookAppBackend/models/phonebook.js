@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 
-const url = process.env.MONGODB_URI
+const url = 'mongodb+srv://IlBardoHammer:tcXUd9VhGJeqBIA9@cluster0.fn6pq.mongodb.net/phonebookApp?retryWrites=true&w=majority&appName=Cluster0'
 
 mongoose.set('strictQuery', false)
 
