@@ -8,3 +8,12 @@ Content-Type: application/json
   "important": true
 }
 
+###
+PUT http://localhost:3001/api/notes/673f473b984272c416bc9c68
+Content-Type: application/json
+
+{
+  "content": "PHP is a language of Chaos",
+  "important": true
+}
+
