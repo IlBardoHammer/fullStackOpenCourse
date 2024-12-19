@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan')
 const app = express();
 const cors = require('cors')
-
+require('dotenv').config()
 
 const Person = require('./models/phonebook')
 
@@ -17,51 +17,55 @@ morgan.token('body', function (req) {
   return JSON.stringify(req.body)
 })
 
-
 // ROUTE HANDLER
 
-app.get('/api/persons', (request, response) => {
-  Person.find({}).then(persons => {
-    response.json(persons)
-  })
+app.get('/api/persons', (request, response, next) => {
+  Person.find({})
+    .then(persons => {
+      response.json(persons)
+    })
+    .catch(error => next(error))
 })
 
 app.get('/api/info', (request, response) => {
-  const numberPersons = persons.length
-  const date = new Date()
+  Person.countDocuments({})
+    .then(numberPersons => {
+      const date = new Date();
 
-  response.send(`
-  <html>
-      <body>
-        <p>Phonebook has info for ${ numberPersons } people</p>
-        <p>${ date }</p>
-      </body>
-    </html>
-  `)
-})
+      response.send(`
+        <html>
+          <body>
+            <p>Phonebook has info for ${numberPersons} people</p>
+            <p>${date}</p>
+          </body>
+        </html>
+      `);
+    })
+    .catch(error => {
+      console.error('Errore:', error);
+      response.status(500).send('Errore nel recupero dei dati');
+    });
+});
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
-  const person = persons.find(person => person.id === id)
 
-  if ( !person ) {
-    response.status(404).end('There are not person with this ID')
-  }
+  Person.findById(id)
+    .then(person => {
+      if ( person ) {
+        response.json(person)
+      }
+      else {
+        response.status(404).send({ error: 'ID person not exist' })
+      }
 
-  response.json(person)
-})
-
-app.delete('/api/persons/:id', (request, response) => {
-  const id = request.params.id
-  persons = persons.filter(person => person.id !== id)
-
-  response.status(204).end()
+    })
+    .catch(error => next(error))
 
 })
 
 app.post('/api/persons', (request, response) => {
   const body = request.body
-  // const nameExists = persons.find(p => p.name === body.name)
 
   if ( !body.name || !body.number ) {
     return response.status(400).json({
@@ -75,10 +79,47 @@ app.post('/api/persons', (request, response) => {
   })
 
   person.save().then(personSaved => {
-    console.log(personSaved)
     response.json(personSaved)
   })
 })
+
+app.put('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+  const body = request.body
+
+  const updatedPerson = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(id, updatedPerson, { new: true })
+    .then(updatedUser => {
+      response.json(updatedUser)
+    })
+    .catch(error => next(error))
+})
+
+app.delete('/api/persons/:id', (request, response, next) => {
+  const id = request.params.id
+
+  Person.findByIdAndDelete(id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if ( error.name === 'CastError' ) {
+    response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3002
 
