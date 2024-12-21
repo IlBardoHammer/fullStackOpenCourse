@@ -15,8 +15,18 @@ mongoose.connect(url)
   })
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    required: true,
+    minLength: 3
+  },
+  number: {
+    type: String,
+    required: true,
+    validate: {
+      validator: validateNumberPhone
+    }
+  }
 })
 
 personSchema.set('toJSON', {
@@ -26,6 +36,11 @@ personSchema.set('toJSON', {
     delete returnedObject.__v
   }
 })
+
+function validateNumberPhone(number){
+  const regex = /^\d{2,3}-\d{5,}$/
+  return regex.test(number)
+}
 
 module.exports = mongoose.model('Person', personSchema)
 

@@ -5,6 +5,7 @@ const cors = require('cors')
 require('dotenv').config()
 
 const Person = require('./models/phonebook')
+const { query } = require("express");
 
 // MIDDLEWARE
 
@@ -35,8 +36,8 @@ app.get('/api/info', (request, response) => {
       response.send(`
         <html>
           <body>
-            <p>Phonebook has info for ${numberPersons} people</p>
-            <p>${date}</p>
+            <p>Phonebook has info for ${ numberPersons } people</p>
+            <p>${ date }</p>
           </body>
         </html>
       `);
@@ -64,7 +65,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if ( !body.name || !body.number ) {
@@ -78,21 +79,18 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   })
 
-  person.save().then(personSaved => {
-    response.json(personSaved)
-  })
+  person.save()
+    .then(personSaved => {
+      response.json(personSaved)
+    })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
-  const body = request.body
+  const { name, number } = request.body
 
-  const updatedPerson = {
-    name: body.name,
-    number: body.number,
-  }
-
-  Person.findByIdAndUpdate(id, updatedPerson, { new: true })
+  Person.findByIdAndUpdate(id, { name, number }, { new: true, runValidators: true, context: query})
     .then(updatedUser => {
       response.json(updatedUser)
     })
@@ -115,7 +113,9 @@ const errorHandler = (error, request, response, next) => {
   if ( error.name === 'CastError' ) {
     response.status(400).send({ error: 'malformatted id' })
   }
-
+  else if ( error.name === 'ValidationError' ) {
+    response.status(400).send({ error: error.message })
+  }
   next(error)
 }
 
