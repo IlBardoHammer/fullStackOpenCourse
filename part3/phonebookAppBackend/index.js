@@ -1,11 +1,11 @@
-const express = require('express');
+const express = require('express')
 const morgan = require('morgan')
-const app = express();
+const app = express()
 const cors = require('cors')
 require('dotenv').config()
 
 const Person = require('./models/phonebook')
-const { query } = require("express");
+const { query } = require('express')
 
 // MIDDLEWARE
 
@@ -31,7 +31,7 @@ app.get('/api/persons', (request, response, next) => {
 app.get('/api/info', (request, response) => {
   Person.countDocuments({})
     .then(numberPersons => {
-      const date = new Date();
+      const date = new Date()
 
       response.send(`
         <html>
@@ -40,13 +40,13 @@ app.get('/api/info', (request, response) => {
             <p>${ date }</p>
           </body>
         </html>
-      `);
+      `)
     })
     .catch(error => {
-      console.error('Errore:', error);
-      response.status(500).send('Errore nel recupero dei dati');
-    });
-});
+      console.error('Errore:', error)
+      response.status(500).send('Errore nel recupero dei dati')
+    })
+})
 
 app.get('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
@@ -70,7 +70,7 @@ app.post('/api/persons', (request, response, next) => {
 
   if ( !body.name || !body.number ) {
     return response.status(400).json({
-      error: "Missing data of person"
+      error: 'Missing data of person'
     })
   }
 
@@ -90,7 +90,7 @@ app.put('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
   const { name, number } = request.body
 
-  Person.findByIdAndUpdate(id, { name, number }, { new: true, runValidators: true, context: query})
+  Person.findByIdAndUpdate(id, { name, number }, { new: true, runValidators: true, context: query })
     .then(updatedUser => {
       response.json(updatedUser)
     })
@@ -101,7 +101,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
   const id = request.params.id
 
   Person.findByIdAndDelete(id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
